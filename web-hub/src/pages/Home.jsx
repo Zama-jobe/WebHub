@@ -3,6 +3,15 @@ import "../style.css";
 import { Link } from "react-router-dom";
 
 const Home = () => {
+  // const [backendData, setBackendData] = useState([{}]);
+  // useEffect(() => {
+  //   fetch("https://7h2zs7-4000.csb.app") // Replace with your backend server URL
+  //     .then((response) => response.json())
+  //     .then((data) => {
+  //       setBackendData(data);
+  //     });
+  // }, []);
+
   const posts = [
     {
       id: 1,

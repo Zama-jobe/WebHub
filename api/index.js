@@ -5,13 +5,14 @@ import cors from "cors";
 const app = express();
 app.use(express.json());
 app.use(cors());
+app.use(express.urlencoded({ extended: true }));
 
 const PORT = 4000;
 
 let channels = [];
 const lessons = [];
 
-app.get("/", (req, res) => {
+app.get("/api/write", (req, res) => {
   res.json({ hello: "WORLD" });
 });
 
@@ -62,6 +63,27 @@ app.get("/api/write/:id", (req, res) => {
   } else {
     res.status(404).json({ message: "channel does not exist" });
   }
+});
+
+//put does a complete replacement of the req.body,you have to supply all the values again,does a complete overide
+app.put("/api/write/:id", (req, res) => {
+  const { id } = req.params; //helps identify record we want to update
+
+  //create a variable thats going to hold the changes
+  const changes = req.body; //the body will contain the changes we want to make
+
+  const index = channels.findIndex((channel) => channel.id === id); //channels.findIndex and for each channel turn to us the index where the channel.id equals the id
+
+  if (index !== -1) {
+    //found it
+    channels[index] = changes;
+  } else {
+    res.status(404).json({ message: "channel does not exist" });
+  }
+});
+
+app.post("/", (req, res) => {
+  console.log(re.body);
 });
 
 app.listen(4000, () => {

@@ -7,14 +7,15 @@ const Write = () => {
 
   return (
     <div className="add">
-      <div className="content">
-        <input type="text" placeholder="Title" />
+      <div className="content" action="/" method="POST">
+        <input type="text" placeholder="Title" name="title" />
         <div className="editorContainer">
           <ReactQuill
             className="editor"
             theme="snow"
             value={value}
             onChange={setValue}
+            name="input"
           />
         </div>
       </div>
