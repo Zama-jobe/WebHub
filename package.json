@@ -6,6 +6,9 @@
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "bcryptjs": "^2.4.3",
+    "dompurify": "^3.1.4",
+    "jsonwebtoken": "^9.0.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-quill": "^2.0.0",
@@ -40,5 +43,6 @@
   "devDependencies": {
     "html-webpack-plugin": "^5.6.0",
     "sass": "^1.77.1"
-  }
+  },
+  "proxy": "http://localhost:8800/ap/"
 }

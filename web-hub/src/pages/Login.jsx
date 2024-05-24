@@ -1,23 +1,42 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "../style.css";
 import { Link } from "react-router-dom";
+import axios from "axios";
 
-const Login = () => {
+const Home = () => {
+  const [posts, setPosts] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get("/api/posts")
+      .then((response) => {
+        setPosts(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching posts:", error);
+      });
+  }, []);
+
   return (
-    <div className="auth">
-      <h1>Login</h1>
-      <form>
-        <input required type="text" placeholder="username"></input>
-        <input required type="email" placeholder="email"></input>
-        <input required type="password" placeholder="password"></input>
-        <button>login</button>
-        <p>This is an error!</p>
-        <span>
-          Don't have an account? <Link to="/register">Register</Link>
-        </span>
-      </form>
+    <div className="home">
+      <div className="posts">
+        {posts.map((post) => (
+          <div className="post" key={post.id}>
+            <div className="img">
+              <img src={post.img} alt="" />
+            </div>
+            <div className="content">
+              <Link className="link" to={`/post/${post.id}`}>
+                <h1>{post.title}</h1>
+              </Link>
+              <p>{post.desc}</p>
+              <button>Read More</button>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
 
-export default Login;
+export default Home;
