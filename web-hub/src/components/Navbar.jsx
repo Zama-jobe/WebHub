@@ -12,10 +12,10 @@ const Navbar = () => {
         </div>
         <div className="links">
           <Link className="link" to="/?web=art">
-            <h6>ART</h6>
+            <h6>HOME</h6>
           </Link>
-          <Link className="link" to="/?web=art">
-            <h6>SCIENCE</h6>
+          {/* <Link className="link" to="/?web=art">
+            <h6></h6>
           </Link>
           <Link className="link" to="/?web=art">
             <h6>TECHNOLOGY</h6>
@@ -25,7 +25,7 @@ const Navbar = () => {
           </Link>
           <Link className="link" to="/?web=art">
             <h6>FOOD</h6>
-          </Link>
+          </Link> */}
           <span>Zama</span>
           <span>Logout</span>
           <span className="write">

@@ -1,3 +1,4 @@
+// index.js
 import express from "express";
 import shortid from "shortid";
 import cors from "cors";
@@ -9,83 +10,63 @@ app.use(express.urlencoded({ extended: true }));
 
 const PORT = 4000;
 
-let channels = [];
-const lessons = [];
+let posts = [];
 
-app.get("/api/write", (req, res) => {
-  res.json({ hello: "WORLD" });
+// Create a new blog post
+app.post("/api/posts", (req, res) => {
+  const { title, content, image } = req.body;
+  const newPost = {
+    id: shortid.generate(),
+    title,
+    content,
+    image
+  };
+  posts.push(newPost);
+  res.status(201).json(newPost);
 });
 
-app.get("/hello", (req, res) => {
-  res.json({ hello: "Future senior dev" });
+
+// Get all blog posts
+app.get("/api/posts", (req, res) => {
+  res.status(200).json(posts);
 });
 
-app.post("/api/write", (req, res) => {
-  const channelInfo = req.body;
-  channelInfo.id = shortid.generate();
-  channels.push(channelInfo);
-  // res.status(201);
-  console.log(channelInfo);
-  try {
-    const response = channelInfo;
-    res.status(200).json({ response });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: error.message });
-  }
-});
-
-app.get("/api/write", (req, res) => {
-  res.status(200).json(channels);
-});
-
-app.delete("/api/write/:id", (req, res) => {
+// Get a single blog post by ID
+app.get("/api/posts/:id", (req, res) => {
   const { id } = req.params;
-  const deleted = channels.find((channels) => channels.id === id); //go into this array (channels) find and return to me the channel where the channel id in the array matches the one we passing in on tthis (line 42)req.params and stick it in this variable(this line)
-  if (deleted) {
-    console.log(deleted);
-    channels = channels.filter((channels) => channels.id !== id); //!==(is not equal) //return to us a brand new channels array minus the id of the one we passed in here (app.delete("/api/channels/:id", (req, res) =>)
-    res.status(200).json(deleted);
-  } else {
-    console.log(deleted);
-    res
-      .status(404)
-      .json({ message: "Channel you are looking for does not exist" }); //else say hey i cant find it
-  }
-});
-
-app.get("/api/write/:id", (req, res) => {
-  const { id } = req.params;
-
-  const found = channels.find((channel) => channel.id == id);
+  const found = posts.find((post) => post.id === id); 
   if (found) {
     res.status(200).json(found);
   } else {
-    res.status(404).json({ message: "channel does not exist" });
+    res.status(404).json({ message: "Post does not exist" });
   }
 });
 
-//put does a complete replacement of the req.body,you have to supply all the values again,does a complete overide
-app.put("/api/write/:id", (req, res) => {
-  const { id } = req.params; //helps identify record we want to update
-
-  //create a variable thats going to hold the changes
-  const changes = req.body; //the body will contain the changes we want to make
-
-  const index = channels.findIndex((channel) => channel.id === id); //channels.findIndex and for each channel turn to us the index where the channel.id equals the id
-
+// Update a blog post by ID
+app.put("/api/posts/:id", (req, res) => {
+  const { id } = req.params;
+  const changes = req.body;
+  const index = posts.findIndex((post) => post.id === id);
   if (index !== -1) {
-    //found it
-    channels[index] = changes;
+    posts[index] = { ...posts[index], ...changes };
+    res.status(200).json(posts[index]);
   } else {
-    res.status(404).json({ message: "channel does not exist" });
+    res.status(404).json({ message: "Post not found" });
   }
 });
 
-app.post("/", (req, res) => {
-  console.log(re.body);
+// Delete a blog post by ID
+app.delete("/api/posts/:id", (req, res) => {
+  const { id } = req.params;
+  const index = posts.findIndex((post) => post.id === id);
+  if (index !== -1) {
+    const deletedPost = posts.splice(index, 1);
+    res.status(200).json(deletedPost);
+  } else {
+    res.status(404).json({ message: "Post not found" });
+  }
 });
 
-app.listen(4000, () => {
-  console.log(`\n Server Running on http://localhost:${PORT}`);
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
 });
