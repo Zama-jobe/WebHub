@@ -1,4 +1,4 @@
-// index.js
+
 import express from "express";
 import shortid from "shortid";
 import cors from "cors";
@@ -43,17 +43,17 @@ app.get("/api/posts/:id", (req, res) => {
 });
 
 // Update a blog post by ID
-app.put("/api/posts/:id", (req, res) => {
-  const { id } = req.params;
-  const changes = req.body;
-  const index = posts.findIndex((post) => post.id === id);
-  if (index !== -1) {
-    posts[index] = { ...posts[index], ...changes };
-    res.status(200).json(posts[index]);
-  } else {
-    res.status(404).json({ message: "Post not found" });
-  }
-});
+// app.put("/api/posts/:id", (req, res) => {
+//   const { id } = req.params;
+//   const changes = req.body;
+//   const index = posts.findIndex((post) => post.id === id);
+//   if (index !== -1) {
+//     posts[index] = { ...posts[index], ...changes };
+//     res.status(200).json(posts[index]);
+//   } else {
+//     res.status(404).json({ message: "Post not found" });
+//   }
+// });
 
 // Delete a blog post by ID
 app.delete("/api/posts/:id", (req, res) => {
