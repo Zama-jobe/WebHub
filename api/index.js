@@ -1,7 +1,9 @@
-
 import express from "express";
 import shortid from "shortid";
 import cors from "cors";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 
 const app = express();
 app.use(express.json());
@@ -10,7 +12,24 @@ app.use(express.urlencoded({ extended: true }));
 
 const PORT = 4000;
 
-let posts = [];
+// Convert import.meta.url to a file path
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const postsFilePath = path.join(__dirname, 'posts.json');
+
+// Helper function to read posts from the file
+const readPostsFromFile = () => {
+  const data = fs.readFileSync(postsFilePath, 'utf-8');
+  return JSON.parse(data);
+};
+
+// Helper function to write posts to the file
+const writePostsToFile = (posts) => {
+  fs.writeFileSync(postsFilePath, JSON.stringify(posts, null, 2));
+};
+
+// Initialize posts from the file
+let posts = readPostsFromFile();
 
 // Create a new blog post
 app.post("/api/posts", (req, res) => {
@@ -22,9 +41,9 @@ app.post("/api/posts", (req, res) => {
     image
   };
   posts.push(newPost);
+  writePostsToFile(posts);
   res.status(201).json(newPost);
 });
-
 
 // Get all blog posts
 app.get("/api/posts", (req, res) => {
@@ -42,13 +61,14 @@ app.get("/api/posts/:id", (req, res) => {
   }
 });
 
-// Update a blog post by ID
+// Update a blog post by ID 
 // app.put("/api/posts/:id", (req, res) => {
 //   const { id } = req.params;
 //   const changes = req.body;
 //   const index = posts.findIndex((post) => post.id === id);
 //   if (index !== -1) {
 //     posts[index] = { ...posts[index], ...changes };
+//     writePostsToFile(posts);
 //     res.status(200).json(posts[index]);
 //   } else {
 //     res.status(404).json({ message: "Post not found" });
@@ -61,6 +81,7 @@ app.delete("/api/posts/:id", (req, res) => {
   const index = posts.findIndex((post) => post.id === id);
   if (index !== -1) {
     const deletedPost = posts.splice(index, 1);
+    writePostsToFile(posts);
     res.status(200).json(deletedPost);
   } else {
     res.status(404).json({ message: "Post not found" });
