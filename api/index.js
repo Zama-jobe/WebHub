@@ -31,8 +31,11 @@ const upload = multer({ storage });
 
 // Helper function to read posts from the file
 const readPostsFromFile = () => {
-  const data = fs.readFileSync(postsFilePath, 'utf-8');
-  return JSON.parse(data);
+  if (fs.existsSync(postsFilePath)) {
+    const data = fs.readFileSync(postsFilePath, 'utf-8');
+    return JSON.parse(data);
+  }
+  return [];
 };
 
 // Helper function to write posts to the file
@@ -46,11 +49,12 @@ let posts = readPostsFromFile();
 // Create a new blog post
 app.post("/api/posts", upload.single('image'), (req, res) => {
   const { title, content } = req.body;
+  const imageUrl = req.file ? `http://localhost:${PORT}/uploads/${req.file.filename}` : null;
   const newPost = {
     id: shortid.generate(),
     title,
     content,
-    image: req.file ? req.file.filename : null
+    image: imageUrl
   };
   posts.push(newPost);
   writePostsToFile(posts);
@@ -72,20 +76,6 @@ app.get("/api/posts/:id", (req, res) => {
     res.status(404).json({ message: "Post does not exist" });
   }
 });
-
-// Update a blog post by ID (Uncomment if needed)
-// app.put("/api/posts/:id", (req, res) => {
-//   const { id } = req.params;
-//   const changes = req.body;
-//   const index = posts.findIndex((post) => post.id === id);
-//   if (index !== -1) {
-//     posts[index] = { ...posts[index], ...changes };
-//     writePostsToFile(posts);
-//     res.status(200).json(posts[index]);
-//   } else {
-//     res.status(404).json({ message: "Post not found" });
-//   }
-// });
 
 // Delete a blog post by ID
 app.delete("/api/posts/:id", (req, res) => {
