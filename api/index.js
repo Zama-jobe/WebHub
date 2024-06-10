@@ -4,6 +4,7 @@ import cors from "cors";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import multer from "multer";
 
 const app = express();
 app.use(express.json());
@@ -16,6 +17,17 @@ const PORT = 4000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const postsFilePath = path.join(__dirname, 'posts.json');
+
+// Setup multer for file uploads
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join(__dirname, 'uploads'));
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  }
+});
+const upload = multer({ storage });
 
 // Helper function to read posts from the file
 const readPostsFromFile = () => {
@@ -32,13 +44,13 @@ const writePostsToFile = (posts) => {
 let posts = readPostsFromFile();
 
 // Create a new blog post
-app.post("/api/posts", (req, res) => {
-  const { title, content, image } = req.body;
+app.post("/api/posts", upload.single('image'), (req, res) => {
+  const { title, content } = req.body;
   const newPost = {
     id: shortid.generate(),
     title,
     content,
-    image
+    image: req.file ? req.file.filename : null
   };
   posts.push(newPost);
   writePostsToFile(posts);
@@ -61,7 +73,7 @@ app.get("/api/posts/:id", (req, res) => {
   }
 });
 
-// Update a blog post by ID 
+// Update a blog post by ID (Uncomment if needed)
 // app.put("/api/posts/:id", (req, res) => {
 //   const { id } = req.params;
 //   const changes = req.body;
@@ -87,6 +99,9 @@ app.delete("/api/posts/:id", (req, res) => {
     res.status(404).json({ message: "Post not found" });
   }
 });
+
+// Serve images
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);

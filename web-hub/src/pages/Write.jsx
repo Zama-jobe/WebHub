@@ -6,19 +6,24 @@ import { useNavigate } from "react-router-dom";
 const Write = () => {
   const [title, setTitle] = useState("");
   const [value, setValue] = useState("");
+  const [image, setImage] = useState(null);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const newPost = { title, content: value };
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("content", value);
+    if (image) {
+      formData.append("image", image);
+    }
+
     try {
       const response = await fetch('http://localhost:4000/api/posts', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newPost),
+        body: formData,
       });
+
       if (response.ok) {
         navigate('/'); // Redirect to home page
       } else {
@@ -54,7 +59,11 @@ const Write = () => {
             <h1>Publish</h1>
             <span><b>Status:</b> Draft</span>
             <span><b>Visibility:</b> Public</span>
-            <input style={{ display: "none" }} type="file" id="file" />
+            <input
+              type="file"
+              id="file"
+              onChange={(e) => setImage(e.target.files[0])}
+            />
             <label className="file" htmlFor="file">Upload Image</label>
             <div className="buttons">
               <button type="button" className="firstChild">Save as a draft</button>
